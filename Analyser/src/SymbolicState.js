@@ -57,6 +57,7 @@ function BuildUnaryJumpTable(state) {
 
 class SymbolicState {
 	constructor(input, sandbox) {
+		this.native_func = {"JSON_stringify": JSON.stringify};
 		this.ctx = new Z3.Context();
 		this.slv = new Z3.Solver(this.ctx,
 			Config.incrementalSolverEnabled,
@@ -207,8 +208,10 @@ class SymbolicState {
 
 		//Push all PCs up until bound
 		this._buildAsserts(Math.min(this.input._bound, this.pathCondition.length)).forEach(x => this.slv.assert(x));
+		console.log("laji6");
 		this.slv.push();
 
+		console.log("laji3");
 		for (let i = this.input._bound; i < this.pathCondition.length; i++) {
 
 			//TODO: Make checks on expressions smarter
@@ -340,7 +343,7 @@ class SymbolicState {
      */
 	createSymbolicValue(name, concrete) {
 
-		Log.logMid(`Args ${JSON.stringify(arguments)} ${name} ${concrete}`);
+		Log.logMid(`Args ${this.native_func["JSON_stringify"](arguments)} ${name} ${concrete}`);
 
 		this.stats.seen("Symbolic Values");
 
@@ -450,7 +453,7 @@ class SymbolicState {
 	_symbolicBinary(op, left_c, left_s, right_c, right_s) {
 		this.stats.seen("Symbolic Binary");
 
-		Log.logMid(`Symbolic Binary: ${JSON.stringify(arguments)}`);
+		Log.logMid(`Symbolic Binary: ${this.native_func["JSON_stringify"](arguments)}`);
 
 		switch (op) {
 		case "===":

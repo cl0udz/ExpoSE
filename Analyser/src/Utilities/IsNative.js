@@ -14,7 +14,7 @@ const SECRET_CACHE_STR = "__checked_isNative__before__";
 var reNative = RegExp("^" +
     String(toString)
         .replace(/[.*+?^${}()|[\]\/\\]/g, "\\$&")
-        .replace(/toString|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
+        .replace(/toString|hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
 );
 
 function isNativeCore(value) {

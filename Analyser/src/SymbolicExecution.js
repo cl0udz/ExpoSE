@@ -23,6 +23,8 @@ class SymbolicExecution {
 		this._fileList = new Array();
 		this._exitFn = exitFn;
 
+		this.native_func = {"JSON_stringify": JSON.stringify};
+
 		if (typeof window !== "undefined") {
 
 			window._ExpoSE = this;
@@ -108,7 +110,7 @@ class SymbolicExecution {
 			}
       
 			if (f.name == "open" || f.name == "fetch") {
-				console.log("REPORTING FN OPEN " + JSON.stringify(args));
+				//console.log("REPORTING FN OPEN " + JSON.stringify(args));
 				this.report(args[1]);
 			}
 		}
@@ -123,8 +125,9 @@ class SymbolicExecution {
 
 		const functionName = f ? f.name : "undefined";
 
-		const fn_model = this.models.get(f);
-		Log.logMid(fn_model ? ("Exec Model: " + functionName + " " + (new Error()).stack) : functionName + " unmodeled");
+		//const fn_model = this.models.get(f);
+		var fn_model = this.models.get(f);
+		//Log.logMid(fn_model ? ("Exec Model: " + functionName + " " + (new Error()).stack) : functionName + " unmodeled");
 
 		/**
 		 * Concretize the function if it is native and we do not have a custom model for it
@@ -249,7 +252,7 @@ class SymbolicExecution {
 
 		}
 
-		Log.logHigh(`Get field ${ObjectHelper.asString(base)}[${ObjectHelper.asString(offset)}] at ${this._location(iid)}`);
+		//Log.logHigh(`Get field ${ObjectHelper.asString(base)}[${ObjectHelper.asString(offset)}] at ${this._location(iid)}`);
 
 		//If dealing with a SymbolicObject then concretize the offset and defer to SymbolicObject.getField
 		if (base instanceof SymbolicObject) {
@@ -296,7 +299,7 @@ class SymbolicExecution {
 
 	putFieldPre(iid, base, offset, val, _isComputed, _isOpAssign) {
 		this.state.coverage.touch(iid);
-		Log.logHigh(`Put field ${ObjectHelper.asString(base)}[${ObjectHelper.asString(offset)}] at ${this._location(iid)}`);
+		//Log.logHigh(`Put field ${ObjectHelper.asString(base)}[${ObjectHelper.asString(offset)}] at ${this._location(iid)}`);
 
 		if (this.state.getConcrete(offset) === "src"
         || this.state.getConcrete(offset) === "href") {
@@ -314,7 +317,7 @@ class SymbolicExecution {
 
 	putField(iid, base, offset, val, _isComputed, _isOpAssign) {
 
-		Log.logHigh(`PutField ${base.toString()} at ${offset}`);
+		//Log.logHigh(`PutField ${base.toString()} at ${offset}`);
 
 		if (base instanceof SymbolicObject) {
 			return {
@@ -384,12 +387,21 @@ class SymbolicExecution {
 
 	functionEnter(iid, f, _dis, _args) {
 		this.state.coverage.touch(iid);
-		Log.logHigh(`Entering ${ObjectHelper.asString(f)} near ${this._location(iid)}`);
+		Log.logHigh(`Entering ${iid} ${ObjectHelper.asString(f)} near ${this._location(iid)}`);
+		try{
+			if(iid == 257){
+				if(this.pipi)
+					throw new Error("eerrrrrrrr");
+				this.pipi = true;
+			}
+		} catch(error) {
+			console.log(error);
+		}
 	}
 
 	functionExit(iid, returnVal, wrappedExceptionVal) {
 		this.state.coverage.touch(iid);
-		Log.logHigh(`Exiting function ${this._location(iid)}`);
+		Log.logHigh(`Exiting ${iid} function ${this._location(iid)}`);
 		return {
 			returnVal: returnVal,
 			wrappedExceptionVal: wrappedExceptionVal,
@@ -480,7 +492,7 @@ class SymbolicExecution {
 	binary(iid, op, left, right, result_c, _isOpAssign, _isSwitchCaseComparison, _isComputed) {
 		this.state.coverage.touch(iid);
 
-		Log.logHigh("Op " + op + " left " + ObjectHelper.asString(left) + " right " + ObjectHelper.asString(right) + " result_c " + ObjectHelper.asString(result_c) + " at " + this._location(iid));
+		//Log.logHigh("Op " + op + " left " + ObjectHelper.asString(left) + " right " + ObjectHelper.asString(right) + " result_c " + ObjectHelper.asString(result_c) + " at " + this._location(iid));
 
 		let result;
 
@@ -508,8 +520,9 @@ class SymbolicExecution {
 	unary(iid, op, left, result_c) {
 		this.state.coverage.touch(iid);
 
-		Log.logHigh("Unary " + op + " left " + ObjectHelper.asString(left) + " result " + ObjectHelper.asString(result_c)); 
+		//Log.logHigh("Unary " + op + " left " + ObjectHelper.asString(left) + " result " + ObjectHelper.asString(result_c)); 
 
+		console.log(result_c);
 		return {
 			result: this.state.unary(op, left)
 		};

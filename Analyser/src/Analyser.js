@@ -16,6 +16,7 @@ const fs = External.load("fs");
 const process = External.load("process");
 
 const input = process.argv[process.argv.length - 1];
+var native_func = {"JSON_stringify": JSON.stringify};
 
 Log.logHigh("Built with VERY logging enabled");
 Log.logMid("Built with FINE logging enabled");
@@ -34,7 +35,7 @@ J$.analysis = new SymbolicExecution(J$, JSON.parse(input), (state, coverage) => 
 	Log.log("Finished play with PC " + state.pathCondition.map(x => x.ast));
 
 	if (Config.outCoveragePath) {
-		fs.writeFileSync(Config.outCoveragePath, JSON.stringify(coverage.end()));
+		fs.writeFileSync(Config.outCoveragePath, native_func["JSON_stringify"](coverage.end()));
 		Log.log("Wrote final coverage to " + Config.outCoveragePath);
 	} else {
 		Log.log("No final coverage path supplied");
@@ -51,7 +52,7 @@ J$.analysis = new SymbolicExecution(J$, JSON.parse(input), (state, coverage) => 
 		};
 
 		if (Config.outFilePath) {
-			fs.writeFileSync(Config.outFilePath, JSON.stringify(finalOut));
+			fs.writeFileSync(Config.outFilePath, native_func["JSON_stringify"](finalOut));
 			Log.log("Wrote final output to " + Config.outFilePath);
 		} else {
 			Log.log("No final output path supplied");

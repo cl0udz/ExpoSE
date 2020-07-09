@@ -8,9 +8,11 @@ export default function(state, ctx, model, helpers) {
 	model.add(Function.prototype.bind, ConcretizeIfNative(Function.prototype.bind));
 
   model.add(Object.prototype.hasOwnProperty, function(base, args) {
+
     for (let i = 0; i < args.length; i++) {
       args[i] = state.getConcrete(args[i]);
     }
+    //Function.prototype.hasOwnProperty.apply(state.getConcrete(base), args); 
     return Object.prototype.hasOwnProperty.apply(state.getConcrete(base), args); 
   });
 

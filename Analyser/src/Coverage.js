@@ -24,6 +24,7 @@ class Coverage {
 		this._branches = [];
 		this._branchFilenameMap = [];
 		this._lastIid = 0; //Store the last IID touched for search strategizer
+		this.native_func = {"JSON_stringify": JSON.stringify};
 	}
 
 	end() {
@@ -37,7 +38,7 @@ class Coverage {
 			if (this._branches[i] !== undefined) {
 
 				//Deep copy the smap
-				const map = JSON.parse(JSON.stringify(this._sandbox.smap[localSid]));
+				const map = JSON.parse(this.native_func["JSON_stringify"](this._sandbox.smap[localSid]));
 
 				//Strip away any non SID related entities
 				for (const localIid in map) {
